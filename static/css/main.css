@@ -1,0 +1,93 @@
+/* Footer */
+html, body {
+  height: 100%;
+}
+body {
+  display: flex;
+  flex-direction: column;
+}
+.container {
+  flex: 1 0 auto;
+}
+.footer {
+    background-color: #802433;
+    flex-shrink: 0;
+}
+.footer a {
+    color: white;
+}
+/* Input Form */
+.row-index {
+    margin-top: 12rem;
+}
+.row-dfa {
+    margin-top: 1rem;
+}
+#row-index .form-inline {
+    width: 80%;
+    text-align: center;
+}
+#row-dfa .form-inline {
+    width: 100%;
+    text-align: center;
+}
+.form-group {
+    width: 100%;
+}
+#inputFormula {
+    width: 100%;
+}
+.btn-custom {
+    background-color: #802433;
+    color: white;
+}
+.btn-custom:hover,
+.btn-custom:disabled {
+    background-color: rgba(128, 36, 51, 0.8);
+    color: white;
+}
+.sub {
+    width: 100%;
+    text-align: left;
+}
+/* Custom Color anchors */
+.main a {
+    color: #802433;
+}
+.main a:hover {
+    color: rgba(128, 36, 51, 0.8);
+}
+/* Headings color */
+h1, h2, h3, h4, h5, h6 {
+    color: #802433;
+}
+/* Spinner */
+.spinner-border {
+    color: #802433;
+    width: 4rem;
+    height: 4rem;
+}
+#rand-example {
+    cursor: pointer;
+}
+#rand-example:hover {
+    text-decoration: underline;
+}
+/* Mobile */
+@media only screen and (max-width: 768px) {
+    #row-index .form-inline {
+        width: 100%;
+        text-align: center;
+    }
+    .sub {
+        width: 100%;
+        text-align: center;
+        margin-bottom: 2rem;
+    }
+    .sapienza-logo {
+        text-align: center;
+    }
+    .sapienza-logo img {
+        width: 40%;
+    }
+}

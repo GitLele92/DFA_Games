@@ -1,0 +1,124 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="row justify-content-md-center align-items-center">
+    <div class="col-12 d-flex justify-content-center">
+        <div class="container">
+            <h2 href="ltlf_syntax"><a class="mr-3" href="/">
+                <svg class="bi bi-arrow-left" width="1.5em" height="1.5em" viewBox="0 0 16 16" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
+                  <path fill-rule="evenodd" d="M5.854 4.646a.5.5 0 0 1 0 .708L3.207 8l2.647 2.646a.5.5 0 0 1-.708.708l-3-3a.5.5 0 0 1 0-.708l3-3a.5.5 0 0 1 .708 0z"/>
+                  <path fill-rule="evenodd" d="M2.5 8a.5.5 0 0 1 .5-.5h10.5a.5.5 0 0 1 0 1H3a.5.5 0 0 1-.5-.5z"/>
+                </svg></a>LTL<sub>f</sub> Syntax</h2>
+
+            <div class="row mt-5">
+
+                <div class="col-md">
+
+                         <table class="table">
+                              <thead class="thead-light">
+                                <tr>
+                                    <h4>Propositional Symbols</h4>
+                                </tr>
+                                <tr>
+                                  <th scope="col">Symbol</th>
+                                  <th scope="col">Syntax</th>
+                                </tr>
+                              </thead>
+                              <tbody>
+                                <tr>
+                                  <td>true</td>
+                                  <td>True</td>
+                                </tr>
+                                <tr>
+                                  <td>false</td>
+                                  <td>False</td>
+                                </tr>
+                                <tr>
+                                  <td>[a-z][a-z0-9_]*</td>
+                                  <td>Atomic</td>
+                                </tr>
+                              </tbody>
+                         </table>
+                </div>
+
+                <div class="col-md">
+
+                         <table class="table">
+                          <thead class="thead-light">
+                            <tr>
+                                <h4>Boolean Operators</h4>
+                            </tr>
+                            <tr>
+                              <th scope="col">Symbol</th>
+                              <th scope="col">Syntax</th>
+                            </tr>
+                          </thead>
+                          <tbody>
+                            <tr>
+                              <td>&, &&</td>
+                              <td>And</td>
+                            </tr>
+                            <tr>
+                              <td>|, ||</td>
+                              <td>Or</td>
+                            </tr>
+                            <tr>
+                              <td>!, ~</td>
+                              <td>Not</td>
+                            </tr>
+                            <tr>
+                              <td>->, =></td>
+                              <td>Implication</td>
+                            </tr>
+                            <tr>
+                              <td><->, <=></td>
+                              <td>Equivalence</td>
+                            </tr>
+                          </tbody>
+                        </table>
+                </div>
+                <div class="col-md">
+
+                         <table class="table">
+                          <thead class="thead-light">
+                            <tr>
+                                <h4>Future Temporal Operators</h4>
+                            </tr>
+                            <tr>
+                              <th scope="col">Symbol</th>
+                              <th scope="col">Syntax</th>
+                            </tr>
+                          </thead>
+                          <tbody>
+                            <tr>
+                              <td>X</td>
+                              <td>Next</td>
+                            </tr>
+                            <tr>
+                              <td>F</td>
+                              <td>Eventually</td>
+                            </tr>
+                            <tr>
+                              <td>U</td>
+                              <td>Until</td>
+                            </tr>
+                            <tr>
+                              <td>G</td>
+                              <td>Always</td>
+                            </tr>
+                            <tr>
+                              <td>WX</td>
+                              <td>WeakNext</td>
+                            </tr>
+                            <tr>
+                              <td>R</td>
+                              <td>Release</td>
+                            </tr>
+                          </tbody>
+                        </table>
+                </div>
+
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

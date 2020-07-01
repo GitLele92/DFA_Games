@@ -1,0 +1,62 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="row justify-content-md-center align-items-center">
+    <div class="col-12 d-flex justify-content-center">
+
+        <div class="container">
+            <h2 href="ltlf_syntax"><a class="mr-3" href="/">
+                <svg class="bi bi-arrow-left" width="1.5em" height="1.5em" viewBox="0 0 16 16" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
+                  <path fill-rule="evenodd" d="M5.854 4.646a.5.5 0 0 1 0 .708L3.207 8l2.647 2.646a.5.5 0 0 1-.708.708l-3-3a.5.5 0 0 1 0-.708l3-3a.5.5 0 0 1 .708 0z"/>
+                  <path fill-rule="evenodd" d="M2.5 8a.5.5 0 0 1 .5-.5h10.5a.5.5 0 0 1 0 1H3a.5.5 0 0 1-.5-.5z"/>
+                </svg></a>About</h2>
+            <p class="text-justify">
+                LTL<sub>f</sub>2DFA is a tool that transforms an LTL<sub>f</sub> or a PLTL<sub>f</sub> formula into a
+                minimal Deterministic Finite state Automaton (DFA) using <a target="_blank" href="https://www.brics.dk/mona/">MONA</a>.
+                The resulting DFA is symbolic in the transitions.
+            </p>
+
+            <h5>License</h5>
+            <p class="text-justify">
+                DFA Games is licensed under the GNU Lesser General Public License v3 or later License
+                (<a target="_blank" href="https://www.gnu.org/licenses/lgpl-3.0.html">LGPLv3+</a>).
+            </p>
+
+            <h5>Acknowledgments</h5>
+            <p class="text-justify">
+                This project (&copy 2018-<script>document.write(new Date().getFullYear())</script>) is proudly funded by the
+                <a target="_blank" href="https://whitemech.github.io">WhiteMech ERC AG</a> no.834228 under the
+                European Union's Horizon 2020 research and innovation programme.
+            </p>
+
+            <h5>References</h5>
+            <ul class="list-group list-group-flush">
+              <li class="list-group-item">
+                  <b>Linear Temporal Logic and Linear Dynamic Logic on Finite Traces</b>
+                  <br>
+                  De Giacomo, G. and Vardi, M. Y.<br>
+                  In Proceedings of the Twenty-Third International Joint Conference on Artificial Intelligence (IJCAI), 2013.
+              </li>
+              <li class="list-group-item">
+                  <b>First-Order vs. Second-Order Encodings for LTL<sub>f</sub>-to-Automata Translation</b>
+                  <br>
+                  Zhu, S.; Pu, G.; Vardi, M. Y.<br>
+                  In Theory and Applications of Models of Computation. TAMC 2019. Lecture Notes in Computer Science. Springer, 2019.
+              </li>
+                <li class="list-group-item">
+                  <b>MONA Version 1.4 User Manual</b>
+                  <br>
+                  Klarlund, N. and M&oslash;ller, A. <br>
+                  In Notes Series NS-01-1. BRICS, Department of Computer Science, University of Aarhus, 2001
+              </li>
+              <li class="list-group-item">
+                  <b>LTL and Past LTL on Finite Traces for Planning and Declarative Process Mining</b>
+                  <br>
+                  Fuggitti F. <br>
+                  In M.Sc. Thesis. Sapienza University of Rome, 2018
+              </li>
+            </ul>
+        </div>
+
+    </div>
+</div>
+{% endblock %}
