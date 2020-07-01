@@ -10,9 +10,9 @@
                   <path fill-rule="evenodd" d="M2.5 8a.5.5 0 0 1 .5-.5h10.5a.5.5 0 0 1 0 1H3a.5.5 0 0 1-.5-.5z"/>
                 </svg></a>About</h2>
             <p class="text-justify">
-                LTL<sub>f</sub>2DFA is a tool that transforms an LTL<sub>f</sub> or a PLTL<sub>f</sub> formula into a
-                minimal Deterministic Finite state Automaton (DFA) using <a target="_blank" href="https://www.brics.dk/mona/">MONA</a>.
-                The resulting DFA is symbolic in the transitions.
+                DFA games' is a software for solving games over a Deterministic Finite-state Automaton (DFA). Here the DFA is definided using Linear Temporal Logic interpreted over finite traces with past xor future operators. Software visualize the DFA corresponding to the formula and colors its nodes according to the following criterion: <br>
+                (i) nodes NOT belonging to the winning set are grey <br>
+                (ii) colours of the nodes in the winning set range from light blue, for final state, to yellow, for most distant states (where colours are ordered according to their frenceque and states according to the number of worst-case steps to reach the final state)
             </p>
 
             <h5>License</h5>
