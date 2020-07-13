@@ -229,7 +229,7 @@ def converter(expected):
                     init_states.append(states[j])
         if("doublecircle" in expected[i]):
             for j in range(len(states)):
-                state_string = str(states[j])+";"
+                state_string = " "+str(states[j])+";"
                 if(state_string in expected[i]):
                     terminal_states.append(states[j])
 
