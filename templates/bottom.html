@@ -21,3 +21,11 @@
         $(".spinner-border").hide();
     </script>
 {% endif %}
+
+{% if output2 %}
+    <script type="text/javascript">
+        $("#row-result2").html(atob("{{ output2 }}"));
+        $(".spinner-border").hide();
+    </script>
+{% endif %}
+

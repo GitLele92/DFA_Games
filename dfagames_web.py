@@ -6,10 +6,11 @@ from sympy import *
 from itertools import combinations
 import graphviz
 import matplotlib.colors as colors
+import matplotlib.pyplot as plt
 from ltlf2dfa.parser.ltlf import LTLfParser
 import re
 from pythomata import SymbolicAutomaton
-
+import matplotlib.patches as ptch
 import subprocess
 import os
 import datetime
@@ -23,6 +24,38 @@ PAST_OPS = {"Y", "O", "S", "H"}
 
 app = Flask(__name__)
 
+def computeStrategy(dfa, winningDict, controllables):
+    strategy = {}
+    strategy_list = []
+    for s in winningDict:
+      level = winningDict[s]
+      if level > 0:
+        ## cerchiamo uno stato a livello-1 raggiungibili da s
+        trans_s = dfa._transition_function[s]
+        #print("transition dallo stato ", s)
+        #print(trans_s)
+        for s_prime in winningDict:
+          if s_prime in trans_s and winningDict[s_prime] == level-1:
+            #print("strategy for state ", s)
+            #print(trans_s[s_prime])
+            label = str(trans_s[s_prime])
+
+            if label == 'True':
+              action = 'True'
+            else:
+              action = ''
+              for c in controllables:
+                if label.find('~'+c) > -1:
+                  action = action+'~'+c+' & '
+                elif label.find(c) > -1:
+                  action = action+c+' & '
+
+            strategy[s] = action[:-3]
+            strategy_list.append([str(s), str(strategy[s])])
+            break
+
+
+    return strategy, strategy_list
 
 def encode_svg(file):
     """Encode file to base64."""
@@ -159,13 +192,16 @@ def winning_dict(dfa, controllable, uncontrollable):
     return winning_dict
 
 ###################################################################coloriamo gli stati
-def to_graphviz_winning_map(dfa, winningDict) -> graphviz.Digraph:
+def to_graphviz_winning_map(dfa, winningDict): 
+        #-> graphviz.Digraph:
         """
         Convert to graphviz.Digraph object.
 
         :return: the graphviz.Digraph object.
         :raise ValueError: if it was not possible to compute the graph.
         """
+        color_map = {}
+        color_map[-1] = colors.to_hex([0.7 ,0.7 , 0.7])
         m = max(winningDict.values())
         if m != 0:       
           step = 1 / m
@@ -178,6 +214,7 @@ def to_graphviz_winning_map(dfa, winningDict) -> graphviz.Digraph:
             if state in winningDict:
               c = ( step * winningDict[state] )
               color_node = colors.to_hex([ c, 1, 1-c])
+              color_map[winningDict[state]] = colors.to_hex([ c, 1, 1-c])
             else:
               color_node = colors.to_hex([0.7 ,0.7 , 0.7])
             if state == dfa.initial_state:
@@ -196,7 +233,7 @@ def to_graphviz_winning_map(dfa, winningDict) -> graphviz.Digraph:
         for (start, guard, end) in dfa.get_transitions():
             graph.edge(str(start), str(end), label=str(guard))
 
-        return graph
+        return graph, color_map
 
 def converter(expected):
 
@@ -264,6 +301,68 @@ def converter(expected):
     #automaton.remove_state(0)
     return dfa
 
+def plot(formula, strategy_list, realizable, controllables, uncontrollables, legend = {0: 'blue', 1: 'yellow'}):
+
+    ##### plot strategy
+    fig, axs =plt.subplots(3,1)
+
+    collabel=("controllable symbols", "uncontrollable symbols")
+    axs[0].axis('tight')
+    axs[0].axis('off')
+
+    axs[0].set_title("LTLf formula: "+formula)
+    cc = ''
+    for c in controllables:
+      cc = cc+c+', '
+    uu = ''
+    for u in uncontrollables:
+      uu = uu+u+', '
+    lista = [[ cc[:-2] , uu[:-2]  ]]
+    #[[str(controllables), str(uncontrollables)]]
+    the_table = axs[0].table(cellText= lista,colLabels=collabel,loc='center')
+
+
+    collabel=("state", "action to take")
+    axs[1].axis('tight')
+    axs[1].axis('off')
+    if realizable:
+      axs[1].set_title("The formula is realizable")
+      the_table = axs[1].table(cellText=strategy_list,colLabels=collabel,loc='center')
+    else:
+      axs[1].set_title("The formula is NOT realizable")      
+    #axs.text(5, 5, "The strategy is realizable")
+
+    ### legenda
+    axs[2].set(xlim=(0, 1), ylim = (0, 1))
+    #axs[2].axis('tight')
+    axs[2].axis('off')
+
+    axs[2].set_title("Legend")
+    x = 0.3
+    y = 0.9
+    for l in legend:
+      circle = ptch.Circle((x,y), 0.05, facecolor = legend[l], edgecolor = 'black')
+      axs[2].add_artist(circle)
+      y -= 0.17
+      if l < 0:
+        label = "goal unreachable"
+      else:
+        if l == 0:
+          label = "GOAL state"
+        else:
+           label = "goal reachable in {} steps".format(l)
+      axs[2].text(x+0.1, y +0.1, label)
+
+
+    plt.savefig("static/tmp/piero.svg", format='svg')
+    #plt.show()
+         
+def realizzabile(dfa, winningDict):
+    if dfa.initial_state in winningDict:
+      return True
+    return False             
+
+
 def ltl2dfagame(ltl, controllables, uncontrollables, isLtlf):
       
       controllables = controllables.split(' ')
@@ -303,10 +402,23 @@ def ltl2dfagame(ltl, controllables, uncontrollables, isLtlf):
       #print(win_dict)
 
       ### stampo winning map
-      graph = to_graphviz_winning_map(dfa, win_dict)
+      graph, color_map = to_graphviz_winning_map(dfa, win_dict)
       #graph.render(outputFileName)
-      return graph
 
+      ### stampo se è realizzabile
+      realizable = realizzabile(dfa, win_dict)
+      #realizable = False
+      ### stampo la strategy
+      if realizable:
+        strat, strat_list = computeStrategy(dfa, win_dict, controllables)
+      else:
+        strat_list = []
+
+      ### plot
+      print(color_map)
+      plot(ltl, strat_list, realizable, controllables, uncontrollables, color_map)
+      
+      return graph
 
 
  ################################ FINE ROBA NOSTRA ########################################
@@ -345,13 +457,17 @@ def dfa():
                                                 "{}/static/tmp/{}.svg".format(PACKAGE_DIR, automa_name)), shell=True)
 
     encoding = encode_svg("{}/static/tmp/{}.svg".format(PACKAGE_DIR, automa_name)).decode("utf-8")
-
+    piero_encoding = encode_svg("{}/static/tmp/piero.svg".format(PACKAGE_DIR, "plt_img")).decode("utf-8")
+    
+    
     os.unlink("{}/static/dot/{}.dot".format(PACKAGE_DIR, automa_name))
     os.unlink("{}/static/tmp/{}.svg".format(PACKAGE_DIR, automa_name))
+    os.unlink("{}/static/tmp/piero.svg".format(PACKAGE_DIR, "plt_img"))
 
     return render_template("dfa.html",
                            formula=formula,
-                           output=encoding)
+                           output = piero_encoding,
+                           output2= encoding)
 
 if __name__== "__main__":
     app.run(debug=True)
