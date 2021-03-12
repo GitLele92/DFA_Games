@@ -8,4 +8,4 @@ import logging
 logging.basicConfig(stream=sys.stderr)
 sys.path.insert(0,"/var/www/dfagames_web")
 
-from ltlf2dfa_web import app as application
+from dfagames_web import app as application

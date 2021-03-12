@@ -5,6 +5,8 @@ from pythomata.impl.symbolic import SymbolicDFA
 from sympy import *
 from itertools import combinations
 import graphviz
+import matplotlib
+matplotlib.use('Agg')
 import matplotlib.colors as colors
 import matplotlib.pyplot as plt
 from ltlf2dfa.parser.ltlf import LTLfParser
@@ -19,7 +21,7 @@ import base64
 
 
 PACKAGE_DIR = os.path.dirname(os.path.abspath(__file__))
-FUTURE_OPS = {"X", "F", "U", "G", "WX", "R"}
+FUTURE_OPS = {"X", "F", "U", "G", "W", "R"}
 PAST_OPS = {"Y", "O", "S", "H"}
 
 app = Flask(__name__)
@@ -52,9 +54,11 @@ def computeStrategy(dfa, winningDict, controllables):
 
             strategy[s] = action[:-3]
             strategy_list.append([str(s), str(strategy[s])])
+            print("strategy list = " + str(strategy_list))
             break
 
-
+   
+   
     return strategy, strategy_list
 
 def encode_svg(file):
@@ -118,20 +122,37 @@ def alphabet(dfa):
 def preC(dfa, controllable, uncontrollable, E):
     states = dfa.states
     pre_C = set()
-    ps_c = powerset(controllable)
-    for set_c in ps_c:
-        for q in states.difference(E):
-            pre_C.add(q)
+
+
+    strategy = {}
+    noBreak = True
+    print("E diff = "+str(states.difference((E))))
+    for q in states.difference(E):
+        print("########## q = "+str(q))
+        ps_c = powerset(controllable)
+        for set_c in ps_c:
             cf_c = characteristic_function(set_c) #it is an interpretation over st
+            print("##### set_c = "+str(set_c))
+            winning = True
             ps_u = powerset(uncontrollable)
             for set_u in ps_u:
+                print("## set_u = "+str(set_u))
                 cf_u = characteristic_function(set_u)
                 interpretation = dict(cf_c, **cf_u) 
                 p = dfa.get_successor(q, interpretation)
-                if p not in E:
-                    pre_C.remove(q)
-                    break     
-    return pre_C
+                #print("q {}, interpretation {}, p {}".format(q, interpretation, p)) 
+                winning = winning and (p in E)
+                if not winning:
+                    break 
+            if(winning):
+              pre_C.add(q)
+              strategy[q] = set_c 
+              #print("q {}, strategy {}, p {}".format(q, strategy[q], p)) 
+              break
+    #print("Pre_C  = "  + str(pre_C)) 
+    #print("strategy  = " + str(strategy)) 
+    return pre_C, strategy
+
 '''
 def preC(dfa, controllable, uncontrollable, E):
     states = dfa.states
@@ -176,20 +197,58 @@ def winning_dict(dfa, controllable, uncontrollable):
     assert controllable.issubset(variables)  
     uncontrollable = variables.difference(controllable)
     '''
+    def not_accept_empty_trace(dfa):
+        #make dfa not accepting empty trace
+        old_initial_state = dfa.initial_state
+        if(dfa.is_accepting(old_initial_state)):
+            transitions = dfa.get_transitions_from(old_initial_state)
+            new_init_state = dfa.create_state()
+            dfa.set_initial_state(new_init_state)
+            for trans in transitions:
+                _, guard, destination = trans
+                dfa.add_transition((new_init_state, guard, destination)) 
+   
+    not_accept_empty_trace(dfa)    
     winning_set = dfa.accepting_states
     winning_dict = dict()
     count = 0
     pre_C = winning_set
+    final_strat = {}
     while True:
+        print("############### count = "+str(count))
+        print("Pre_C  = " + str(pre_C)) 
+        print("winning_set  = " + str(winning_set)) 
+
         if len(pre_C)==0:
             break
-        for s in pre_C:
+        for s in pre_C: 
             winning_dict[s]=count
-        count+=1   
-        print(count)  
+        count+=1
+
+        pre_C, strategy_temp = preC(dfa, controllable, uncontrollable, winning_set)
         winning_set = winning_set.union(pre_C)
-        pre_C = preC(dfa, controllable, uncontrollable, winning_set)
-    return winning_dict
+
+        strat_list = []
+
+        for el in strategy_temp:
+          final_strat[el] = strategy_temp[el]
+    
+    strat_list = []
+    for el in final_strat:
+      c_list = []
+      
+      for c in controllable:
+        if c in final_strat[el]:
+          c_list.append(str(c))
+        else:
+          c_list.append("~"+str(c))
+
+      strat_list.append([str(el), str(c_list).replace("[", "").replace("'","").replace("]","").replace("}","")]) 
+    #print("final strat = " + str(final_strat))
+    #print("final strat lust = " + str(strat_list))
+    print("winning dict = " + str(winning_dict))
+    strat_list.sort()
+    return winning_dict, strat_list
 
 ###################################################################coloriamo gli stati
 def to_graphviz_winning_map(dfa, winningDict): 
@@ -202,7 +261,10 @@ def to_graphviz_winning_map(dfa, winningDict):
         """
         color_map = {}
         color_map[-1] = colors.to_hex([0.7 ,0.7 , 0.7])
-        m = max(winningDict.values())
+        if(winningDict == {}):
+          m = 0
+        else:
+          m = max(winningDict.values())
         if m != 0:       
           step = 1 / m
         else:
@@ -264,6 +326,7 @@ def converter(expected):
                 state_string = str(states[j])+";"
                 if(state_string in expected[i]):
                     init_states.append(states[j])
+                    
         if("doublecircle" in expected[i]):
             for j in range(len(states)):
                 state_string = " "+str(states[j])+";"
@@ -325,6 +388,8 @@ def plot(formula, strategy_list, realizable, controllables, uncontrollables, leg
     collabel=("state", "action to take")
     axs[1].axis('tight')
     axs[1].axis('off')
+    if(strategy_list == []):
+        realizable = False
     if realizable:
       axs[1].set_title("The formula is realizable")
       the_table = axs[1].table(cellText=strategy_list,colLabels=collabel,loc='center')
@@ -354,7 +419,7 @@ def plot(formula, strategy_list, realizable, controllables, uncontrollables, leg
       axs[2].text(x+0.1, y +0.1, label)
 
 
-    plt.savefig("static/tmp/piero.svg", format='svg')
+    plt.savefig("{}/static/tmp/piero.svg".format(PACKAGE_DIR), format='svg')
     #plt.show()
          
 def realizzabile(dfa, winningDict):
@@ -398,22 +463,26 @@ def ltl2dfagame(ltl, controllables, uncontrollables, isLtlf):
 
       ### calcolo winning dict
       print("\n\n#############  winning_dict ################")
-      win_dict = winning_dict(dfa, controllables, uncontrollables)
+      win_dict, strat_list = winning_dict(dfa, controllables, uncontrollables)
       #print(win_dict)
 
       ### stampo winning map
+      
       graph, color_map = to_graphviz_winning_map(dfa, win_dict)
       #graph.render(outputFileName)
 
-      ### stampo se è realizzabile
+      ### stampo se e' realizzabile
       realizable = realizzabile(dfa, win_dict)
       #realizable = False
       ### stampo la strategy
+      '''
       if realizable:
         strat, strat_list = computeStrategy(dfa, win_dict, controllables)
       else:
         strat_list = []
-
+      '''
+      if not realizable:
+        strat_list = []
       ### plot
       print(color_map)
       plot(ltl, strat_list, realizable, controllables, uncontrollables, color_map)
@@ -457,12 +526,12 @@ def dfa():
                                                 "{}/static/tmp/{}.svg".format(PACKAGE_DIR, automa_name)), shell=True)
 
     encoding = encode_svg("{}/static/tmp/{}.svg".format(PACKAGE_DIR, automa_name)).decode("utf-8")
-    piero_encoding = encode_svg("{}/static/tmp/piero.svg".format(PACKAGE_DIR, "plt_img")).decode("utf-8")
+    piero_encoding = encode_svg("{}/static/tmp/piero.svg".format(PACKAGE_DIR)).decode("utf-8")
     
     
     os.unlink("{}/static/dot/{}.dot".format(PACKAGE_DIR, automa_name))
     os.unlink("{}/static/tmp/{}.svg".format(PACKAGE_DIR, automa_name))
-    os.unlink("{}/static/tmp/piero.svg".format(PACKAGE_DIR, "plt_img"))
+    os.unlink("{}/static/tmp/piero.svg".format(PACKAGE_DIR))
 
     return render_template("dfa.html",
                            formula=formula,

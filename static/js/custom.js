@@ -37,7 +37,8 @@ $(document).ready(function() {
       "((F(a) & F(b)) & F(c))",
       "G(F((a & b)))",
       "F((a -> F((b & X(c)))))",
-      "((toss & head) | ((toss & !(head)) & X(turn)))"
+      "((toss & head) | ((toss & !(head)) & X(turn)))",
+      "(((l & ta) & X (!oa)) | ((l & !(ta)) & X(oa)))"
     ];
 
     const controllables = [
@@ -46,7 +47,8 @@ $(document).ready(function() {
       "a c",
       "a",
       "a c",
-      "toss turn"
+      "toss turn",
+      "l oa"
     ];
 
     const uncontrollables = [
@@ -55,7 +57,8 @@ $(document).ready(function() {
       "b",
       "b",
       "b",
-      "head"
+      "head",
+      "ta"
     ];
 
     $("#rand-example").click(function () {
