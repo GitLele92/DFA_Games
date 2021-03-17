@@ -5,23 +5,30 @@
 <div class="row row-index justify-content-md-center" id="row-index">
     <form class="form-inline" method="post" action="dfa">
         <div class="form-group form-group-lg align-items-start">
-            <div class="col-md-10">
+            <div class="col-md-11">
+                Type an LTL<sub>f</sub> or a PLTL<sub>f</sub> formula:
                 <label for="inputFormula" class="sr-only">Type an LTL<sub>f</sub> or a PLTL<sub>f</sub> formula...</label>
                 <input type="text" class="form-control form-control-lg" id="inputFormula" name="inputFormula"
                        placeholder="Type an LTLf or a PLTLf formula..." required>
                 <input type="checkbox" class="form-check-input" name="exampleCheck1" style="display: none">
-
-                <label for="controllables" class="sr-only">Type the set of controllables symbols</label>
-                <input type="text" class="form-control form-control-lg" id="controllables" name="controllables"
-                       placeholder="Type the set of controllables symbols" required>
-                <input type="checkbox" class="form-check-input" name="exampleCheck1" style="display: none">
-                
-
-                <label for="uncontrollables" class="sr-only">Type the set of uncontrollables symbols</label>
-                <input type="text" class="form-control form-control-lg" id="uncontrollables" name="uncontrollables"
-                       placeholder="Type the set of uncontrollables symbols" required>
-                <input type="checkbox" class="form-check-input" name="exampleCheck1" style="display: none">
-                
+                <div class="row">
+                    <div class="col-md-5">
+                    Type the set of controllables symbols   
+                        <label for="controllables" class="sr-only">Type the set of controllables symbols</label>
+                        <input type="text" class="form-control form-control-lg" id="controllables" name="controllables"
+                               placeholder="Type the set of controllables symbols" required>
+                        <input type="checkbox" class="form-check-input" name="exampleCheck1" style="display: none">
+                    </div>
+                    <div class="col-md-1">
+                    </div>
+                    <div class="col-md-5">
+                    Type the set of uncontrollables symbols 
+                        <label for="uncontrollables" class="sr-only">Type the set of uncontrollables symbols</label>
+                        <input type="text" class="form-control form-control-lg" id="uncontrollables" name="uncontrollables"
+                               placeholder="Type the set of uncontrollables symbols" required>
+                        <input type="checkbox" class="form-check-input" name="exampleCheck1" style="display: none">
+                    </div>
+                </div>
 
                 <div class="sub">
                     <small><a href="ltlf_syntax">LTL<sub>f</sub> Syntax</a></small>
@@ -31,7 +38,8 @@
                     <small><a id="rand-example">Random Example</a></small>
                 </div>
             </div>
-            <div class="col-md-2">
+            <div class="col-md-1">
+                &nbsp
                 <button type="submit" id="buttonFormula" class="btn btn-lg btn-light btn-custom">Convert</button>
             </div>
         </div>
